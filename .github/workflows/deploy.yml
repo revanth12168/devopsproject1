@@ -1,30 +1,45 @@
-- name: Decode SSH Key
-  run: |
-    echo "${{ secrets.SSH_KEY_BASE64 }}" | base64 --decode > private_key.pem
-    chmod 600 private_key.pem
+name: Deploy App
 
-- name: Deploy to EC2
-  uses: appleboy/ssh-action@master
-  with:
-    host: ${{ secrets.HOST }}
-    username: ubuntu
-    key_path: private_key.pem
-    script: |
-      cd /home/ubuntu
-      
-      if [ ! -d "devops-project" ]; then
-        git clone https://github.com/revanth12168/devopsproject1.git
-      fi
+on:
+  push:
+    branches:
+      - main
 
-      cd devops-project
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-      git pull origin main
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      docker stop devops-container || true
-      docker rm devops-container || true
+      - name: Decode SSH Key
+        run: |
+          echo "${{ secrets.SSH_KEY_BASE64 }}" | base64 --decode > private_key.pem
+          chmod 600 private_key.pem
 
-      docker build -t devops-project .
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key_path: private_key.pem
+          script: |
+            cd /home/ubuntu
 
-      docker run -d -p 3000:3000 \
-        --name devops-container \
-        devops-project
+            if [ ! -d "devops-project" ]; then
+              git clone https://github.com/revanth12168/devopsproject1.git
+            fi
+
+            cd devops-project
+
+            git pull origin main
+
+            docker stop devops-container || true
+            docker rm devops-container || true
+
+            docker build -t devops-project .
+
+            docker run -d -p 3000:3000 \
+              --name devops-container \
+              devops-project
