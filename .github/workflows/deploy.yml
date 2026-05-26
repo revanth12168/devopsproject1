@@ -23,7 +23,7 @@ jobs:
           cd /home/ubuntu
           
           if [ ! -d "devops-project" ]; then
-            git clone YOUR_GITHUB_REPO_URL
+            git clone https://github.com/revanth12168/devopsproject1.git
           fi
 
           cd devops-project
