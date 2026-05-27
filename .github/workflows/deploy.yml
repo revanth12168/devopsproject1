@@ -22,11 +22,11 @@ jobs:
         script: |
           cd /home/ubuntu
           
-          if [ ! -d "devops-project" ]; then
+          if [ ! -d "devopsproject1" ]; then
             git clone https://github.com/revanth12168/devopsproject1.git
           fi
 
-          cd devops-project
+          cd devopsproject1
 
           git pull origin main
 
